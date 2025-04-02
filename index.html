@@ -41,7 +41,7 @@
         .chat-widget-window {
             position: absolute;
             bottom: 80px;
-            right: 0;
+            right: 520px;
             width: min(520px, calc(100vw - 40px));
             height: min(540px, calc(100vh - 120px));
             background: white;
@@ -202,36 +202,29 @@
     </style>
 </head>
 <body>
-    <h1>Please click the icon at the<br>bottom right corner of the page.</h1>
+    
     <script>
         class ChatWidget {
             constructor() {
                 this.container = null;
-                this.isOpen = false;
                 this.isProcessing = false;
                 this.sessionId = null;
                 this.initialize();
             }
-
+        
             generateSessionId() {
                 return Array.from(crypto.getRandomValues(new Uint8Array(16)))
                     .map(b => b.toString(16).padStart(2, '0'))
                     .join('');
             }
-
+        
             initialize() {
                 this.container = document.createElement('div');
                 this.container.className = 'chat-widget-container';
                 this.container.innerHTML = `
-                    <div class="chat-widget-button">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
-                        </svg>
-                    </div>
-                    <div class="chat-widget-window">
+                    <div class="chat-widget-window active">
                         <div class="chat-widget-header">
                             <div class="chat-widget-title">Agentools Chatbot</div>
-                            <div class="chat-widget-close">✕</div>
                         </div>
                         <div class="chat-widget-messages"></div>
                         <div class="chat-widget-input">
@@ -240,46 +233,21 @@
                         </div>
                     </div>
                 `;
-
+        
                 document.body.appendChild(this.container);
                 this.setupEventListeners();
+                this.sessionId = this.generateSessionId();
                 this.addMessage("Hello, I am Mayu from Agentools. What AI Agents are you interested in? Do let me know if you are interested in new development, customer support, talent acquisition, SNS management, etc", false);
             }
-
+        
             setupEventListeners() {
-                const button = this.container.querySelector('.chat-widget-button');
-                const close = this.container.querySelector('.chat-widget-close');
                 const input = this.container.querySelector('.chat-widget-input input');
                 const send = this.container.querySelector('.chat-widget-send');
-                const window = this.container.querySelector('.chat-widget-window');
-
-                button.addEventListener('click', () => {
-                    if (!this.isOpen) {
-                        this.sessionId = this.generateSessionId();
-                    }
-                    this.toggleChat();
-                });
-                
-                close.addEventListener('click', () => this.toggleChat());
+        
                 send.addEventListener('click', () => this.handleSend());
                 input.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') this.handleSend();
                 });
-
-                document.addEventListener('click', (e) => {
-                    if (this.isOpen && !window.contains(e.target) && !button.contains(e.target)) {
-                        this.toggleChat();
-                    }
-                });
-            }
-
-            toggleChat() {
-                const window = this.container.querySelector('.chat-widget-window');
-                this.isOpen = !this.isOpen;
-                window.classList.toggle('active', this.isOpen);
-                if (this.isOpen) {
-                    this.container.querySelector('.chat-widget-input input').focus();
-                }
             }
 
             createMessageElement(content, isUser = false) {
