@@ -41,7 +41,7 @@
         .chat-widget-window {
             position: absolute;
             bottom: 80px;
-            right: 346px;
+            right: 520px;
             width: min(520px, calc(100vw - 40px));
             height: min(540px, calc(100vh - 120px));
             background: white;
@@ -114,22 +114,18 @@
             animation: messageIn 0.3s ease;
         }
 
+        /* Modified to keep user messages aligned left too */
         .chat-widget-message.user {
-            margin-left: auto;
-            flex-direction: row-reverse;
+            margin-left: 0;
+            /* Removed flex-direction: row-reverse; */
         }
 
         .chat-widget-avatar {
             width: 28px;
             height: 28px;
             border-radius: 50%;
-            background: #5c6bc0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
+            background-size: cover;
+            background-position: center;
             flex-shrink: 0;
         }
 
@@ -142,8 +138,8 @@
         }
 
         .chat-widget-message.user .chat-widget-content {
-            background: #0084ff;
-            color: white;
+            background: white;
+            color: black;
         }
 
         .chat-widget-input {
@@ -163,12 +159,12 @@
         }
 
         .chat-widget-input input:focus {
-            border-color: #0084ff;
+            border-color: grey;
         }
 
         .chat-widget-send {
-            background: #0084ff;
-            color: white;
+            background: #f0f2f5;
+            color: black;
             border: none;
             padding: 0.6rem 1rem;
             border-radius: 1.5rem;
@@ -228,7 +224,7 @@
                         </div>
                         <div class="chat-widget-messages"></div>
                         <div class="chat-widget-input">
-                            <input type="text" placeholder="Type your message...">
+                            <input type="text" placeholder="Ask Anything" />
                             <button class="chat-widget-send">Send</button>
                         </div>
                     </div>
@@ -256,7 +252,13 @@
                 
                 const avatar = document.createElement('div');
                 avatar.className = 'chat-widget-avatar';
-                avatar.textContent = isUser ? 'U' : 'A';
+                
+                // Using placeholder images instead of text
+                if (isUser) {
+                    avatar.style.backgroundImage = "url('./account.png')"; // Replace with actual user avatar URL
+                } else {
+                    avatar.style.backgroundImage = "url('./favicon.png')";
+                }
 
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'chat-widget-content';
