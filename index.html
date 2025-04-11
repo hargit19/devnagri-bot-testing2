@@ -42,8 +42,9 @@
             position: absolute;
             bottom: 80px;
             right: 400px;
-            width: min(520px, calc(100vw - 40px));
-            height: min(540px, calc(100vh - 120px));
+            width: min(800px, calc(100vw - 40px));
+            height: min(280px, calc(100vh - 120px)); /* Initial height */
+            max-height: 540px; /* Maximum height before scrolling */
             background: white;
             border-radius: 12px;
             box-shadow: 0 5px 40px rgba(0,0,0,0.16);
@@ -278,8 +279,28 @@
                 const messages = this.container.querySelector('.chat-widget-messages');
                 const { message, contentDiv } = this.createMessageElement(content, isUser);
                 messages.appendChild(message);
+                
+                // Adjust the height of chat window based on content
+                this.adjustChatWindowHeight();
+                
                 messages.scrollTop = messages.scrollHeight;
                 return contentDiv;
+            }
+            
+            adjustChatWindowHeight() {
+                const chatWindow = this.container.querySelector('.chat-widget-window');
+                const messagesContainer = this.container.querySelector('.chat-widget-messages');
+                const headerHeight = this.container.querySelector('.chat-widget-header').offsetHeight;
+                const inputHeight = this.container.querySelector('.chat-widget-input').offsetHeight;
+                
+                // Calculate total content height (including all messages)
+                const totalContentHeight = messagesContainer.scrollHeight + headerHeight + inputHeight;
+                
+                // Calculate new height (capped at max-height)
+                const newHeight = Math.min(540, Math.max(300, totalContentHeight));
+                
+                // Apply the new height
+                chatWindow.style.height = `${newHeight}px`;
             }
 
             async handleSend() {
@@ -324,6 +345,10 @@
                         responseText += chunk;
                         contentDiv.innerHTML = marked.parse(responseText);
                         contentDiv.appendChild(cursor);
+                        
+                        // Adjust height as content streams in
+                        this.adjustChatWindowHeight();
+                        
                         this.container.querySelector('.chat-widget-messages').scrollTop = 
                             this.container.querySelector('.chat-widget-messages').scrollHeight;
                     }
@@ -334,6 +359,8 @@
                         anchor.setAttribute('target', '_blank');
                     });
                     
+                    // Final height adjustment after message is complete
+                    this.adjustChatWindowHeight();
 
                 } catch (error) {
                     console.error('Error:', error);
@@ -347,7 +374,9 @@
         }
 
         // Initialize the widget
-        const chatWidget = new ChatWidget();
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatWidget = new ChatWidget();
+        });
     </script>
 </body>
 </html>
